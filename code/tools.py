@@ -4,7 +4,7 @@ import glob
 from PIL import Image
 import numpy as np
 from tensorflow.keras.datasets.mnist import load_data
-import progressbar
+from progressbar import ProgressBar
 from skimage.color import rgb2hsv, hsv2rgb
 
 def plot_images(ims, num, filename):
@@ -52,7 +52,9 @@ def load_image_files(data_dir, reshape=None, flip=True):
     num = len(FILEPATHS) * (2 if flip else 1)
     images = np.zeros((num, *reshape, 3))
     counter = 0
-    for image_path in progressbar.progressbar(FILEPATHS):
+    print('loading images')
+    images_loaded = 0
+    for image_path in FILEPATHS:
         im = Image.open(image_path)
         width, height = im.size
         if reshape is not None:
@@ -68,6 +70,10 @@ def load_image_files(data_dir, reshape=None, flip=True):
         if flip:
             images[counter] = im[:, ::-1]
             counter += 1
+        images_loaded = images_loaded + 1
+        if images_loaded % 1000 == 0:
+            print(f'  loaded {images_loaded} images')
+    print(f'finished loading images {images_loaded}')
     np.random.shuffle(images)
     return images
 

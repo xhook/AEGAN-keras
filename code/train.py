@@ -3,10 +3,10 @@ import pickle
 import argparse
 import shutil
 import json
+import tensorflow as tf
 
 import  numpy as np
 
-import models
 import tools
 import generative_model as gm
 
@@ -17,7 +17,17 @@ MODEL_TYPES = {"AE": gm.AutoEncoder,
                "AAE": gm.AdversarialAutoEncoder,
                "EGAN": gm.EncodingGenerativeAdversarialNetwork,
                "AEGAN": gm.AutoEncodingGenerativeAdversarialNetwork,
+               "SAEGAN": gm.SpyingAutoEncodingGenerativeAdversarialNetwork,
                }
+
+gpus = tf.config.experimental.list_physical_devices('GPU')
+if gpus:
+  print(gpus)
+  try:
+    for gpu in gpus:
+      tf.config.experimental.set_memory_growth(gpu, True)
+  except RuntimeError as e:
+    print(e)
 
 def get_samples(count, x_train, x_test, test=False):
     """Sample from the dataset."""
@@ -179,6 +189,8 @@ if __name__ == '__main__':
             args.name,
             args.latent_dim,
             x_test)
+    # strategy = tf.distribute.MirroredStrategy(["GPU:0", "GPU:1"])
+    # with strategy.scope():
     train_model(MODEL_TYPES[args.type.upper()],
                 dirs,
                 args.parameter_file,
