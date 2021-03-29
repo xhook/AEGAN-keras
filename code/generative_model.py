@@ -565,7 +565,7 @@ class AutoEncodingGenerativeAdversarialNetwork(AdversarialAutoEncoder, EncodingG
         prediction_z_tilde = discriminator_latent(z_tilde)
         model = Model(
             [x_real, z_real],
-            [x_tilde,
+           [x_tilde,
              z_tilde,
              prediction_x_hat,
              prediction_x_tilde,
